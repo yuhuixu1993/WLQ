@@ -1,0 +1,176 @@
+#include <algorithm>
+#include <string>
+#include <vector>
+#include <climits>
+#include <time.h>
+#include <iostream>
+#include <fstream>
+#include <math.h>
+
+#include "caffe/common.hpp"
+#include "caffe/proto/caffe.pb.h"
+#include "caffe/syncedmem.hpp"
+
+namespace caffe {
+template <typename Dtype>
+void kmeans_pre1(Dtype* data_vec,  Dtype* T_vec, float* kernel, int count){
+  int num = 3;
+  float kernel_new[num];
+  int kernel_num[num];
+  // Clustering
+  for (int i=0; i<count; i++){
+    int tmp = 0;
+    float score = 0;
+    if((data_vec[i]-kernel[0])>0){score=data_vec[i]-kernel[0];}
+    else {score=-1*(data_vec[i]-kernel[0]);}
+    //float score = fabs(data_vec[i]-kernel[tmp]);
+    for(int j=1; j<num; j++){
+      if((data_vec[i]-kernel[j])>0 && (data_vec[i]-kernel[j])<score){tmp=j;score=data_vec[i]-kernel[j];}
+      else if ((data_vec[i]-kernel[j])<=0 && (data_vec[i]-kernel[j])>-1*score){tmp=j;score=-1*(data_vec[i]-kernel[j]);}
+    }
+      //if(fabs(data_vec[i]-kernel[j])<score){tmp=j;score=fabs(data_vec[i]-kernel[j]);}
+    T_vec[i] = tmp;
+  }
+
+     
+  // Update kernel
+  for(int i=0;i<num;i++){kernel_num[i]=0;kernel_new[i]=0;}
+  for(int i=0; i<count; i++){
+    kernel_num[int(T_vec[i])] +=1;
+    kernel_new[int(T_vec[i])] +=data_vec[i];
+  }
+  for(int i=0; i<num; i++){
+  if(kernel_num[i]>0) kernel[i] = kernel_new[i] / kernel_num[i];}
+}
+
+template <typename Dtype>
+void kmeans_pre2(Dtype* data_vec,  Dtype* T_vec, float* kernel, int count){
+  int num = 3;
+  float kernel_new[num];
+  int kernel_num[num];
+  for (int i=0; i<count; i++){
+     if (data_vec[i]==kernel[1])
+         T_vec[i]=1;
+      else if (data_vec[i]==kernel[2])
+         T_vec[i]=2;
+      else T_vec[i]=0;
+   }
+     
+  // Update kernel
+  for(int i=0;i<num;i++){kernel_num[i]=0;kernel_new[i]=0;}
+  for(int i=0; i<count; i++){
+    kernel_num[int(T_vec[i])] +=1;
+    kernel_new[int(T_vec[i])] +=data_vec[i];
+  }
+  for(int i=0; i<num; i++){
+  if(kernel_num[i]>0) kernel[i] = kernel_new[i] / kernel_num[i];}
+}
+
+template <typename Dtype>
+void Kmeans(Dtype* data_vec, Dtype* T_vec, float* kernel, int bit_num, int count){
+  //int num = 9;
+  int epoch = 10;
+  //float n_max=0;
+  //float n_min=128;
+  int kernel_num[3];
+  /*for(int i=0; i<count; i++){
+    if (data_vec[i]>0 && data_vec[i]>n_max) n_max = data_vec[i];
+    else if(data_vec[i]<0 && -1*data_vec[i]>n_max) n_max = -1*data_vec[i];
+    //if(fabs(data_vec[i])>n_max) n_max=data_vec[i];
+  }
+  for(int i=0; i<count; i++){
+    if (data_vec[i]>0 && data_vec[i]<n_min) n_min = data_vec[i];
+    else if(data_vec[i]<0 && -1*data_vec[i]<n_min) n_min = -1*data_vec[i];
+    //if(fabs(data_vec[i])>n_max) n_max=data_vec[i];
+  }
+  n_max=pow(2,floor(log(n_max)/log(2)));
+  
+  // Set kernel
+  kernel[0] = 0.0;
+  for(int i=1; i<3; i=i+2){
+    if(n_max==128) 
+       kernel[i]=128-((128-n_min)/2)*(i-1);
+    else
+       kernel[i] = n_max/pow(2,(i-1)/2);
+    //kernel[i] = n_max - floor(i/2)*n_max/(bit_num-1);
+    kernel[i+1] = -kernel[i];
+  }*/
+	std::ifstream fi("/home/qualcomm/k_17.txt");
+        std::ofstream fo;	
+	fo.open("/home/qualcomm/tmp.txt");
+	int n = 0;
+	double k;
+	while (fi>>k) {
+		if (n < 4) {
+			kernel[n] = k;
+		}
+		else {
+			fo << k << std::endl;
+		}
+		n++;
+	}
+	fi.close();
+	fo.close();
+	fi.open("/home/qualcomm/tmp.txt");
+	fo.open("/home/qualcomm/k_17.txt");
+	while (fi>>k) {
+		fo << k << std::endl;
+	}
+	fi.close();
+	fo.close();
+
+  //srand(time(0));
+  //kernel[9] = 0.1;
+  //for(int i=2*bit_num-1; i<num; i++) kernel[i] = 2.0*n_max*rand()/INT_MAX-n_max;
+  // Kmeans
+  for(int e=0; e<epoch; e++){
+    kmeans_pre2(data_vec, T_vec, kernel, count);
+  }
+  for(int i=0;i<3;i++) kernel_num[i]=0;
+  for(int i=0; i<count; i++){
+    kernel_num[int(T_vec[i])] +=1;
+  }
+  if(kernel[3]==0){
+  for(int i=0; i<count; i++){
+    if(T_vec[i]<0){
+      data_vec[i] = kernel[int(T_vec[i])];
+      T_vec[i] = 0;
+    }
+    else T_vec[i] = 1;
+    
+  }}
+  if(kernel[3]==1){
+  for(int i=0; i<count; i++){
+    if(T_vec[i]!=0){
+      data_vec[i] = kernel[int(T_vec[i])];
+      T_vec[i] = 0;
+    }
+    else T_vec[i] = 1;
+    
+  }}
+  if(kernel[3]==2){
+  for(int e=0; e<epoch; e++){
+    kmeans_pre1(data_vec, T_vec, kernel, count);
+  }
+  for(int i=0; i<count; i++){
+    if(T_vec[i]<3){
+      data_vec[i] = kernel[int(T_vec[i])];
+      T_vec[i] = 0;
+    }
+    else T_vec[i] = 1;
+    
+  }}
+  //kernel[3]=0;
+  int R=0;  
+  for(int i=0; i<count; i++){
+    if(T_vec[i] == 0)
+       R=R+1;
+  }
+  std::ofstream fout;
+  fout.open("/home/qualcomm/k_18.txt",ios::app);
+  for(int i=0;i<4;i++) fout<<kernel[i]<<std::endl;
+  fout.close();
+  
+}
+
+} //namespace
