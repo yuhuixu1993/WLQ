@@ -41,7 +41,7 @@ Here is to partition the clusters and quantize and fix the weights in the chosen
 
 
 ### Acceleration
-Low-rank decomposition methods [TRP](https://github.com/yuhuixu1993/Trained-Rank-Pruning) code is also available 
+The code of Low-rank decomposition methods [Trained Rank Pruning](https://github.com/yuhuixu1993/Trained-Rank-Pruning) is also available. 
 
 ## Citation
 ```latex
