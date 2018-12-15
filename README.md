@@ -1,7 +1,12 @@
 # SLQ
 Caffe implementation of paper "Deep Neural Network Compression with Single and Multiple Level Quantization"<https://arxiv.org/pdf/1803.03289.pdf><br>
 
-# Citation
+### How to use
+make the caffe as usual
+
+Download the pretrained AlexNet caffemodel. In models/bvlc_alexnet fintune alexnet you can have the first quantization iteration of SLQ. The key code is in the src/caffe/blob.cpp and include/caffe/kmeans.hpp. To have the other iteration you can change the code in kmeans.hpp and finetune the caffemodel of the first iteration.
+
+### Citation
 ```latex
 @article{xu2018deep,
   title={Deep Neural Network Compression with Single and Multiple Level Quantization},
