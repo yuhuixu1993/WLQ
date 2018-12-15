@@ -42,7 +42,7 @@ void kmeans_pre(Dtype* data_vec,  Dtype* T_vec, float* kernel,int num, int count
     kernel_num[int(T_vec[i])] +=1;
     kernel_new[int(T_vec[i])] +=data_vec[i];
   }
-  for(int i=1; i<num; i++){
+  for(int i=1; i<num; i++){//here1
   if(kernel_num[i]>0) kernel[i] = kernel_new[i] / kernel_num[i];}
 }
 template <typename Dtype>
@@ -73,7 +73,8 @@ void Kmeans(Dtype* data_vec, Dtype* T_vec, Dtype* dis_vec, float* kernel, int nu
     //kernel[i] = n_max - floor(i/2)*n_max/(bit_num-1);
     kernel[i+1] = -kernel[i];
   }
-	/*std::ifstream fi("/home/xuyuhui/x1.txt");
+  //uncomment this if not the first iteration here2
+	/*std::ifstream fi("/home/xuyuhui/k_0.txt");
         std::ofstream fo;	
 	fo.open("/home/xuyuhui/tmp.txt");
 	int n = 0;
@@ -90,7 +91,7 @@ void Kmeans(Dtype* data_vec, Dtype* T_vec, Dtype* dis_vec, float* kernel, int nu
 	fi.close();
 	fo.close();
 	fi.open("/home/xuyuhui/tmp.txt");
-	fo.open("/home/xuyuhui/x1.txt");
+	fo.open("/home/xuyuhui/k_0.txt");
 	while (fi>>k) {
 		fo << k << std::endl;
 	}
@@ -114,7 +115,7 @@ void Kmeans(Dtype* data_vec, Dtype* T_vec, Dtype* dis_vec, float* kernel, int nu
   }
 
   for(int i=0; i<count; i++){
-    if(T_vec[i]<5){
+    if(T_vec[i]<5){//here 3
       data_vec[i] = kernel[int(T_vec[i])];
       dis_vec[i] = 0;
     }
