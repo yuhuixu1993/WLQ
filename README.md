@@ -1,7 +1,7 @@
 # SLQ
 Caffe implementation of paper "Deep Neural Network Compression with Single and Multiple Level Quantization"<https://arxiv.org/pdf/1803.03289.pdf><br>
 
-### How to use
+## How to use
 make the caffe as usual<br>
 
 Download the pretrained AlexNet caffemodel. <br>
@@ -9,7 +9,7 @@ In models/bvlc_alexnet fintune alexnet you can have the first quantization itera
 
 The key code is in the src/caffe/blob.cpp and include/caffe/kmeans.hpp. To have the other iteration you can change the code in kmeans.hpp and finetune the caffemodel of the first iteration.<br>
 
-### Details
+## Details
 Three marks "here1","here2","here3"means three palces need to change in the second iteration.
 #### here1
 Here determines how many kernels need to update by the means of the weights, we do not update the quantized kernels:
@@ -40,8 +40,10 @@ Here is to partition the clusters and quantize and fix the weights in the chosen
 ```
 
 
+### Acceleration
+Low-rank decomposition methods [TRP](https://github.com/yuhuixu1993/Trained-Rank-Pruning) code is also available 
 
-### Citation
+## Citation
 ```latex
 @article{xu2018deep,
   title={Deep Neural Network Compression with Single and Multiple Level Quantization},
