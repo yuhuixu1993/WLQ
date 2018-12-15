@@ -1,5 +1,5 @@
 # SLQ
-Caffe implementation of paper "Deep Neural Network Compression with Single and Multiple Level Quantization"<https://arxiv.org/pdf/1803.03289.pdf><br>
+Caffe implementation of paper ["Deep Neural Network Compression with Single and Multiple Level Quantization"](https://arxiv.org/pdf/1803.03289.pdf)<br>
 
 ## How to use
 make the caffe as usual<br>
